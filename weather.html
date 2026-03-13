@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Weather Dashboard</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background: linear-gradient(to bottom, #87CEEB, #98FB98);
+        margin: 0;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        min-height: 100vh;
+      }
+      h1 {
+        color: #333;
+        text-align: center;
+        margin-bottom: 20px;
+      }
+      #btn {
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        font-size: 16px;
+        cursor: pointer;
+        border-radius: 5px;
+        margin-bottom: 20px;
+        transition: background-color 0.3s;
+      }
+      #btn:hover {
+        background-color: #45a049;
+      }
+      .container {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        flex-wrap: wrap;
+      }
+      .card {
+        background-color: white;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+        text-align: center;
+        width: 200px;
+        transition: transform 0.3s;
+      }
+      .card:hover {
+        transform: translateY(-5px);
+      }
+      .card br {
+        display: none;
+      }
+      .card::before {
+        content: "🌤️";
+        font-size: 2em;
+        display: block;
+        margin-bottom: 10px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <h1>Weather Dashboard</h1>
+
+    <button id="btn">Get Weather</button>
+
+    <div class="container">
+      <div class="card" id="delhi">Delhi</div>
+      <div class="card" id="mumbai">Mumbai</div>
+      <div class="card" id="bangalore">Bangalore</div> 
+    </div>
+  </body>
+  <script>
+    const btn = document.getElementById("btn");
+
+    btn.addEventListener("click", getWeather);
+
+    function getWeather() {
+      const delhi = fetch(
+        "https://api.open-meteo.com/v1/forecast?latitude=28.61&longitude=77.23&current_weather=true",
+      );
+      const mumbai = fetch(
+        "https://api.open-meteo.com/v1/forecast?latitude=19.07&longitude=72.87&current_weather=true",
+      );
+      const bangalore = fetch(
+        "https://api.open-meteo.com/v1/forecast?latitude=12.97&longitude=77.59&current_weather=true",
+      );
+
+      Promise.all([delhi, mumbai, bangalore]) 
+        .then((responses) => {
+          return Promise.all(responses.map((res) => res.json()));
+        })
+        .then((data) => {
+          const [delhiData, mumbaiData, bangaloreData] = data;
+
+          document.getElementById("delhi").innerHTML =
+            `Delhi <br> 🌡 ${delhiData.current_weather.temperature}°C`;
+
+          document.getElementById("mumbai").innerHTML = 
+            `Mumbai <br> 🌡 ${mumbaiData.current_weather.temperature}°C`;
+
+          document.getElementById("bangalore").innerHTML =
+            `Bangalore <br> 🌡 ${bangaloreData.current_weather.temperature}°C`;
+        })
+        .catch((err) => {
+          console.log("Error:", err);
+        }); 
+       
+    }
+  </script>
+</html>
